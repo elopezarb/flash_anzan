@@ -25,7 +25,7 @@ def base_generator(digits, ns, paso):
         dic_pasos = {1: base_sums, 2: base_subs,
                      3: base_sums, 4: base_subs,
                      5: paso_5, 6: paso_6,
-                     7: paso_7}
+                     7: paso_7, 8: paso_8}
         if n == 1:
             dig = random.sample(range(1,10), digits)
             sumlist[0] = dig
@@ -235,9 +235,69 @@ def paso_7_sums(d):
 
 
 def paso_8(sumlist, digits):
-    "Aun no se"
+    if digits < 2:
+        return sumlist.append([0]*digits)
+    
+    sumlarray = soro_sum(np.array(sumlist))
+    pairs = [[i, j] for i,j in zip(sumlarray, sumlarray[1:])]
+    sumpairs = [[0,0]]*len(pairs)
+    sumlist1 = []
+    print('pairs :', pairs)
+    
+    if pairs[0][1] == 9 or pairs[0][0] == 0:
+        
+        sumlist = paso_7(sumlist, digits)
+    
+    else:
+    
+        for p in range(len(pairs)):
+            
+            suma = [0,0]
+                        
+            if p == 0:
+                s0 = paso_6_subs(pairs[p][0])
+                sumpairs[p][0] = s0
+                
+            else:
+                sumpairs[p][0] = sumpairs[p-1][1]
+                sumpairs[p][1] = 0
+                
+            print('sumas :', pairs[p], sumpairs[p])
+            
+            suma = (soro_sum(np.array([[1] + pairs[p]] +
+                                      [[0] + sumpairs[p]]))).tolist()
+            
+            print('suma: ',suma)
+            
+                
+            sumpairs[p][1] = paso_8_subs(suma[-2:])
+            
+            print('sumpairs :', sumpairs[p])
+            
+            sumlist1 += [sumpairs[p][0]]
+        
+        sumlist1 += [sumpairs[p][1]]
+        sumlist.append(sumlist1)
+        
+    print('sumlist :', sumlist)
+    return sumlist
     
         
+def paso_8_subs(d):
+    
+    if (d[1] in [-9, -4] or d[0] == 0):
+        
+        s = paso_6_subs(d[1])
+    
+    elif d[1] >= 5:
+        s = -random.sample(list(range(d[1]+1, 10)),1)[0]
+    
+    else:
+        s = -random.sample(list(range(d[1]+1,6)) + list(range(6+d[1],10)), 1)[0]
+    
+    return s
+    
+
         
 
     
@@ -245,7 +305,7 @@ def paso_8(sumlist, digits):
 
 def change_cond(sumlarray, digits, paso):
     rand_ch = random.sample([0]*2+[1],1)[0]
-    print(rand_ch)
+    # print(rand_ch)
     change = False
     zeros = digits - 1
     nines = digits-1
@@ -313,15 +373,21 @@ def flash_anzan():
         paso_c = paso
     sumlist = base_generator(digits, ns, paso_c)
     sulist = [to_number(su) for su in sumlist]
-    
+    # print(sumlist)
     for s in sulist:
+        sheet.range('D6').color = (255,255,255)
         sheet.range('D6').value = None
         sheet.range('D6').value = s
-        time.sleep(seconds)
+        time.sleep(seconds-.009)
+        sheet.range('D6').color = (155,155,155)
+        time.sleep(.009)
     
     sheet.range('D6').value = None
-    
+    sheet.range('D6').color = (255,255,255)
     sheet.range('C10').value = sum(sulist)
+    sheet.range('D10').value = str(sulist)
+    print(sulist)
+    print(sum(sulist))
 
 def soro_sum(sumlarray, axis: int = 0):
     
@@ -334,18 +400,61 @@ def soro_sum(sumlarray, axis: int = 0):
         sum_array = np.array([0]*len(sumlarray))
         
     else:
-        num_zero = len(sumlarray) - len(list(map(int, str(totsum))))
-        sum_array = np.array([0]*num_zero + list(map(int,(str(totsum)))))
+        # print(str(totsum))
+        
+              
+        num_zero = len(sumlarray) - len(list(map(int, str(abs(totsum)))))
+        
+        if totsum < 0:
+            sum_array = np.array([0]*num_zero + list(map(int, str(abs(totsum)))))
+            sum_array *= -1
+        else:
+            sum_array = np.array([0]*num_zero + list(map(int, (str(totsum)))))
     
     return sum_array
+
+
+
+def paso_7_1(sumlist, digits):
+
+    sumlarray = soro_sum(np.array(sumlist))
+    if (len(sumlarray) > digits) and (sumlarray[0] in [4,9]):
+        
+        sumlist = paso_6(sumlist, len(sumlarray))
+    
+    else:
+        if len(sumlarray) == digits:
+            sumlarray = np.array([0]+sumlarray.tolist())
+            
+        pairs = [[i, j] for i,j in zip(sumlarray, sumlarray[1:])]
+        sumlist1 = digits*[0]
+        
+        for p in range(len(pairs)):
+            
+            if p == 0:
+                suma = soro_sum(np.array([[0,0], pairs[p]]))
+            else:
+                suma = soro_sum(np.array([pairs[p-1], pairs[p]]))
+            
+            sumlist1[p] = paso_7_sums(suma) 
+        sumlist.append(sumlist1)
+        
+        
+    
+    return sumlist
+
+
+
+
+
+
 
 
     #%%
 flash_anzan()
 
 
-
-# sumlists = base_generator(3, 10, 7)
+# sumlists = base_generator(3, 10, 8)
 # print(np.array(sumlists))
 
 "No se distingue cuando hay numeros iguales"
