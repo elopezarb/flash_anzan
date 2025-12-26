@@ -1,0 +1,14 @@
+{
+  "paso": "Paso 8",
+  "numero_digitos": 2,
+  "numero_operaciones": 5,
+  "tipo_operacion": "resta",
+  "guardar_excel": true,
+  "ruta_salida": "Output/resultados.xlsx",
+  "umbral_suma_max": 8,
+  "umbral_resta_min": 2,
+  "limite_resultados": 30,
+  "modo_seleccion": "aleatorio",
+  "peso_carry": 8,
+  "peso_prestamo": 20
+}

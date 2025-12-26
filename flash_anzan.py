@@ -447,22 +447,22 @@ def paso_7_1(sumlist, digits):
 
 
 
+7
+ 
 
-
-
-    #%%
+#%%EED
 flash_anzan()
 
 
 # sumlists = base_generator(3, 10, 8)
-# print(np.array(sumlists))
+# print(np.array(sumlists)) 
 
-"No se distingue cuando hay numeros iguales"
+"No se distingue cuando hay numeros iguales" 
+
 
 # a = [1,2,3]
 # a = np.array(a)
 
 # lists = [[i,j] for i,j in zip(a,a[1:])]
-
 
 
