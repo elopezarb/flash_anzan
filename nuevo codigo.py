@@ -40,7 +40,26 @@ for sheet in excel_nums.sheet_names:
     weights_dic[sheet] = pd.read_excel(excel_weights, sheet_name=sheet, index_col = 0)
 
 
-def normaliza_con_carry(valores, base=10):
+def carry_normalize(valores, base=10):
+    """
+    Normaliza una lista de valores considerando el carry en una base dada.
+    Por ejemplo, en base 10, si un dígito excede 9, se lleva el exceso al siguiente dígito.
+    
+    Parametros
+    ----------
+    valores : lista de int
+        Lista de valores a normalizar.
+    base : int, opcional
+        Base numérica para la normalización (por defecto es 10).
+    
+    Resultados
+    ----------
+    lista de int
+        Lista de valores normalizados con carry aplicado.
+
+    """
+
+
     # valores: [centenas?, decenas, unidades] según longitud
     # ej: [12,13] -> 12 decenas, 13 unidades
     vals = list(valores)
@@ -65,13 +84,28 @@ def normaliza_con_carry(valores, base=10):
 
 
 def get_sum_num(paso, k, n):
-    print('Using ', paso)
-    print('k: ', k)
-    print('n: ', n)
+    """
+    Obtiene un número de suma basado en el paso, k y n dados.
+
+    Parametros
+    ----------
+    paso : str
+        Paso actual del proceso.
+    k : int
+        Índice o posición actual.
+    n : int
+        Valor actual en la posición k.
+
+    Resultados
+    ----------
+    int
+        Número seleccionado para la suma.
+    """
+
     if dic_pasos[paso] > 4:
+        # Si el paso es mayor a 4, revisa k
         if k > 0:
             if dic_cond_extra[paso]:
-                print('Si se puede')
                 options_num = pasos_dic[paso][n].dropna().tolist()
                 options_weight =  weights_dic[paso][n].dropna().tolist()
                 return random.choices(options_num, weights = options_weight, k = 1)[0]
@@ -79,7 +113,6 @@ def get_sum_num(paso, k, n):
                 return get_sum_num(rev_dic_pasos[dic_pasos[paso]-2], k, n)
         else:
             # paso anterior
-            print('Si se puede')
             options_num = pasos_dic[paso][n].dropna().tolist()
             options_weight =  weights_dic[paso][n].dropna().tolist()
             return random.choices(options_num, weights = options_weight, k = 1)[0]
@@ -90,13 +123,28 @@ def get_sum_num(paso, k, n):
         return random.choices(options_num, weights = options_weight, k = 1)[0]
 
 def get_rest_num(paso, k, n):
-    print('Using ', paso)
-    print('k: ', k)
-    print('n: ', n)
+    """
+    Obtiene un número de resta basado en el paso, k y n dados.
+
+    Parametros
+    ----------
+    paso : str
+        Paso actual del proceso.
+    k : int
+        Índice o posición actual.
+    n : int
+        Valor actual en la posición k.
+    
+    Resultados
+    ----------
+    int
+        Número seleccionado para la resta.
+    
+    """
+
     if dic_pasos[paso] > 4:
         if k > 0:
             if dic_cond_extra[paso]:
-                print('Si se puede')
                 options_num = pasos_dic[paso][n].dropna().tolist()
                 options_weight =  weights_dic[paso][n].dropna().tolist()
                 return -random.choices(options_num, weights = options_weight, k = 1)[0]
@@ -159,9 +207,7 @@ full_sum = num1.copy()
 # random.seed(1234)
 
 for i in range(9):
-    if i == 2:
-        print('Aqui')
-    print(sum_complete)
+
     
     dic_change = {'Paso 1-3': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
                   'Paso 2-4': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1)),
@@ -178,9 +224,8 @@ for i in range(9):
                   }
     
     
-    resta = dic_change[paso]
+    resta = dic_change[paso] 
 
-    print('Resta:', resta)
     
     kn = 0
     for j in range(digits):
@@ -216,12 +261,96 @@ for i in range(9):
         next_sum[k] = s
         sum_complete[k] = n + s
         
-        sum_complete = np.array(normaliza_con_carry(sum_complete)) 
+        sum_complete = np.array(carry_normalize(sum_complete)) 
         kn+=1
     
-    print(next_sum)
 
     full_sum = np.vstack((full_sum,next_sum))
 
-print(sum_complete)
 print(full_sum)
+
+#%% 
+
+
+def get_get_next_operation(sum_complete, paso, digits, resta, only_sum = False):
+    """
+    Obtiene la siguiente operación de suma o resta basada en el estado actual.
+
+    Parametros
+    ----------
+    sum_complete : lista de int
+        Lista actual de sumas completas.
+    paso : str
+        Paso actual del proceso.        
+    resta : bool
+        Indica si es una operación de resta.
+    
+    Resultados
+    ----------
+    int
+        Siguiente operación de suma o resta.
+    """
+
+    if resta:
+        rest_p = paso
+        sum_p = rev_dic_pasos[dic_pasos[paso]-1]
+
+    else:
+        sum_p = paso
+        rest_p = rev_dic_pasos[dic_pasos[paso]-1]
+
+    # Change conditions
+    dic_change = {'Paso 1-3': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 2-4': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1)),
+                  'Paso 5': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 6': (random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1),
+                  'Paso 7': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 8': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1)),
+                  'Paso 9': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 10': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1)),
+                  'Paso 11.1': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 11.2': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1)),
+                  'Paso 12.1': (random.sample([1,2,3,4, 5, 6], 1)[0] == 2) or ((sum_complete == 9).sum() > 1),
+                  'Paso 12.2': ((random.sample([1,2,3,4, 5, 6], 1)[0] != 2) and not ((sum_complete == 0).sum() >= 1))
+                  }
+    
+    
+    resta = dic_change[paso] or only_sum
+
+
+    for j in range(digits):
+        
+        
+        
+        k = len(sum_complete) - digits + j
+        n = sum_complete[k]
+        
+        dic_cond_extra = {'Paso 1-3': True,
+                          'Paso 2-4': True,
+                          'Paso 5': True,
+                          'Paso 6': True,
+                          'Paso 7': sum_complete[k-1] not in [4,9],
+                          'Paso 8': sum_complete[k-1] not in [0,5],
+                          'Paso 9': sum_complete[k-1] not in [4,9],
+                          'Paso 10': sum_complete[k-1] not in [0,5],
+                          'Paso 11.1': sum_complete[k-1] not in [9],
+                          'Paso 11.2': sum_complete[k-1] not in [0],
+                          'Paso 12.1': True,
+                          'Paso 12.2': sum_complete[0] not in [0]}
+                          
+                          
+        if resta:
+            s = get_rest_num(rest_p, k, n)
+        
+        else:
+            s = get_sum_num(sum_p, k, n)
+    
+    return s, n
+
+#%%
+
+
+pd.to_pickle(pasos_dic, 'Settings/steps_nums.pickle')
+
+
+
