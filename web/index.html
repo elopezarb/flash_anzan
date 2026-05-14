@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flash Anzan</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="play">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Soroban mental</p>
+            <h1>Flash Anzan</h1>
+          </div>
+          <div class="scoreboard" aria-label="Marcador">
+            <div>
+              <span id="roundCount">0</span>
+              <small>rondas</small>
+            </div>
+            <div>
+              <span id="bestStreak">0</span>
+              <small>racha</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage" aria-live="polite">
+          <div id="flashNumber" class="flash-number">Listo</div>
+          <div id="flashSign" class="flash-sign"></div>
+          <div id="progressDots" class="progress-dots" aria-label="Progreso de operaciones"></div>
+        </div>
+
+        <form id="answerForm" class="answer" autocomplete="off">
+          <label for="answerInput">Resultado</label>
+          <div class="answer-row">
+            <input id="answerInput" inputmode="numeric" pattern="-?[0-9]*" placeholder="0" disabled>
+            <button id="submitAnswer" type="submit" disabled>Comprobar</button>
+          </div>
+          <p id="feedback" class="feedback"></p>
+        </form>
+      </section>
+
+      <aside class="controls" aria-label="Configuracion del juego">
+        <div class="control-group">
+          <label for="modeSelect">Modo</label>
+          <select id="modeSelect">
+            <option value="flash">Flash Anzan</option>
+            <option value="operations">Operaciones Anzan</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="stepSelect">Paso</label>
+          <select id="stepSelect"></select>
+        </div>
+
+        <div class="control-grid">
+          <div class="control-group">
+            <label for="digitsInput">Digitos</label>
+            <input id="digitsInput" type="number" min="1" max="6" value="2">
+          </div>
+          <div class="control-group">
+            <label for="firstDigitsInput">Primer numero</label>
+            <input id="firstDigitsInput" type="number" min="1" max="6" value="2">
+          </div>
+        </div>
+
+        <div class="control-grid">
+          <div class="control-group">
+            <label for="operationsInput">Operaciones</label>
+            <input id="operationsInput" type="number" min="1" max="30" value="5">
+          </div>
+          <div class="control-group operations-setting">
+            <label for="questionsInput">Preguntas</label>
+            <input id="questionsInput" type="number" min="1" max="30" value="5">
+          </div>
+          <div class="control-group speed-setting">
+            <label for="speedInput">Segundos</label>
+            <input id="speedInput" type="number" min="0.25" max="5" step="0.05" value="0.9">
+          </div>
+        </div>
+
+        <label class="check">
+          <input id="onlySumInput" type="checkbox">
+          <span>Solo sumas</span>
+        </label>
+
+        <div class="control-grid">
+          <div class="control-group">
+            <label for="difficultySelect">Dificultad</label>
+            <select id="difficultySelect">
+              <option value="balanced">Normal</option>
+              <option value="easy">Mas facil</option>
+              <option value="hard">Mas dificil</option>
+            </select>
+          </div>
+          <label class="check compact">
+            <input id="forceLevelInput" type="checkbox" checked>
+            <span>Forzar paso</span>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="startButton" type="button">Iniciar</button>
+          <button id="revealButton" type="button" class="ghost" disabled>Ver respuesta</button>
+        </div>
+
+        <div class="history">
+          <h2>Operacion</h2>
+          <ol id="operationList"></ol>
+        </div>
+      </aside>
+    </main>
+
+    <script src="soroban-rules.js"></script>
+    <script src="soroban-game.js"></script>
+  </body>
+</html>
