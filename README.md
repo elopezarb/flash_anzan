@@ -9,7 +9,7 @@ The Soroban has 3 main parts:
 ![Descriptive Image](docs/images/soroban-beads-en.svg)
 
 ## Objective
-This project aims to develop a rule-aware Soorban operation engine capable of generating valid arithmetic sequences depending on the selected learning level; eventually adapting exercise difficulty to individual student performance.  
+This project aims to develop a rule-aware Soroban operation engine capable of generating valid arithmetic sequences depending on the selected learning level; eventually adapting exercise difficulty to individual student performance.  
 The algorithm is currently and will still be used as the main engine for Soroban Operation based games in the [Soroban.mx](https://www.soroban.mx) web page (subscription required).
 
 
